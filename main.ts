@@ -83,8 +83,8 @@ await runBars({
       if (state.seq < coolUntilSeq) return [];
       const hi = rollingHigh();
       if (hi === null) return [];
-      // close <= hi * (100 - DIP_BPS) / 100, in exact bigint arithmetic.
-      if (close * 100n <= hi * BigInt(100 - DIP_BPS)) {
+      // close <= hi * (10000 - DIP_BPS) / 10000, in exact bigint arithmetic.
+      if (close * 10000n <= hi * BigInt(10000 - DIP_BPS)) {
         const room = state.weightRoom(SYMBOL);
         const spend = state.cash < room ? state.cash : room;
         if (spend < BigInt(state.hello.fees.min_notional_quote_units)) return [];
@@ -107,14 +107,14 @@ await runBars({
     const entry = entryClose;
     const peak = peakClose;
 
-    // Take profit first: close >= entry * (100 + TAKE_PROFIT_BPS) / 100.
-    if (close * 100n >= entry * BigInt(100 + TAKE_PROFIT_BPS)) {
+    // Take profit first: close >= entry * (10000 + TAKE_PROFIT_BPS) / 10000.
+    if (close * 10000n >= entry * BigInt(10000 + TAKE_PROFIT_BPS)) {
       entryClose = null;
       peakClose = null;
       return [{ side: 'sell', symbol: SYMBOL, qty: held.qty, max_slippage_bps: MAX_SLIPPAGE_BPS }];
     }
-    // Trailing stop: close <= peak * (100 - TRAIL_BPS) / 100.
-    if (close * 100n <= peak * BigInt(100 - TRAIL_BPS)) {
+    // Trailing stop: close <= peak * (10000 - TRAIL_BPS) / 10000.
+    if (close * 10000n <= peak * BigInt(10000 - TRAIL_BPS)) {
       entryClose = null;
       peakClose = null;
       coolUntilSeq = state.seq + COOLDOWN_BARS;
